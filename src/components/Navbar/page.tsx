@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false); // State untuk mobile menu
 
   useEffect(() => {
     const handleScroll = () => {
@@ -12,6 +13,11 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Fungsi untuk toggle menu
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
 
   return (
     <motion.nav
@@ -48,34 +54,38 @@ const Navbar = () => {
             <motion.button
               whileTap={{ scale: 0.95 }}
               className="text-white p-2"
+              onClick={toggleMenu} // Menjalankan toggleMenu saat ditekan
             >
-              <div className="w-6 h-0.5 bg-white mb-1.5" />
-              <div className="w-6 h-0.5 bg-white mb-1.5" />
-              <div className="w-6 h-0.5 bg-white" />
+              <div
+                className={`w-6 h-0.5 bg-white mb-1.5 transition-all duration-300 ${
+                  menuOpen ? "rotate-45 translate-y-2" : ""
+                }`}
+              />
+              <div
+                className={`w-6 h-0.5 bg-white mb-1.5 transition-all duration-300 ${
+                  menuOpen ? "opacity-0" : ""
+                }`}
+              />
+              <div
+                className={`w-6 h-0.5 bg-white transition-all duration-300 ${
+                  menuOpen ? "-rotate-45 -translate-y-2" : ""
+                }`}
+              />
             </motion.button>
           </div>
 
           {/* Desktop Menu */}
           <ul className="hidden md:flex items-center space-x-8">
             {["Hero", "Edits", "About", "Tools", "Contact"].map((item) => {
-              const sectionId = item.toLowerCase().replace(" ", "-"); // Format id sesuai dengan yang digunakan di section
+              const sectionId = item.toLowerCase().replace(" ", "-");
               return (
                 <li key={item}>
                   <Link
-                    href={`/#${sectionId}`} // Navigasi ke halaman utama dengan hash
-                    className={`text-sm transition-all duration-300 relative group ${
-                      // Anda bisa menambahkan logika untuk menandai section aktif jika diperlukan
-                      false
-                        ? "text-purple-400"
-                        : "text-zinc-400 hover:text-purple-400"
-                    }`}
+                    href={`/#${sectionId}`}
+                    className="text-sm text-zinc-400 hover:text-purple-400 transition-all duration-300 relative group"
                   >
                     <span>{item}</span>
-                    <span
-                      className={`absolute -bottom-1 left-0 h-0.5 bg-purple-400 transition-all duration-300 ${
-                        false ? "w-full" : "w-0"
-                      }`}
-                    />
+                    <span className="absolute -bottom-1 left-0 h-0.5 bg-purple-400 transition-all duration-300 w-0 group-hover:w-full" />
                   </Link>
                 </li>
               );
@@ -91,6 +101,43 @@ const Navbar = () => {
           </ul>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            className="md:hidden absolute top-16 left-0 w-full bg-black/90 backdrop-blur-lg py-5"
+          >
+            <ul className="flex flex-col items-center space-y-6">
+              {["Hero", "Edits", "About", "Tools", "Contact"].map((item) => {
+                const sectionId = item.toLowerCase().replace(" ", "-");
+                return (
+                  <li key={item}>
+                    <Link
+                      href={`/#${sectionId}`}
+                      className="text-lg text-zinc-400 hover:text-purple-400 transition-all duration-300"
+                      onClick={() => setMenuOpen(false)} // Tutup menu saat item diklik
+                    >
+                      {item}
+                    </Link>
+                  </li>
+                );
+              })}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-gradient-to-r from-purple-500 to-blue-500 text-white px-6 py-3 rounded-lg font-medium"
+              >
+                Get Started
+              </motion.button>
+            </ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.nav>
   );
 };
