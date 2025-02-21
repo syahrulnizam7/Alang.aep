@@ -90,14 +90,17 @@ const Navbar = () => {
                 </li>
               );
             })}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="relative overflow-hidden group bg-gradient-to-r from-purple-500 to-blue-500 text-sm text-white px-5 py-2.5 rounded-lg font-medium"
-            >
-              <span className="relative z-10">Get Started</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 transform translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
-            </motion.button>
+
+            <Link href="/videos">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="relative overflow-hidden group bg-gradient-to-r from-purple-500 to-blue-500 text-sm text-white px-5 py-2.5 rounded-lg font-medium"
+              >
+                <span className="relative z-10">Explore</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 transform translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
+              </motion.button>
+            </Link>
           </ul>
         </div>
       </div>
@@ -127,13 +130,15 @@ const Navbar = () => {
                   </li>
                 );
               })}
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-gradient-to-r from-purple-500 to-blue-500 text-white px-6 py-3 rounded-lg font-medium"
-              >
-                Get Started
-              </motion.button>
+              <Link href="/videos">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-gradient-to-r from-purple-500 to-blue-500 text-white px-6 py-3 rounded-lg font-medium"
+                >
+                  Explore
+                </motion.button>
+              </Link>
             </ul>
           </motion.div>
         )}

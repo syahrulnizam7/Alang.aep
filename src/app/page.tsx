@@ -129,7 +129,7 @@ const HeroSection = () => {
                 whileTap={{ scale: 0.95 }}
                 className="w-full group relative overflow-hidden border border-zinc-700 px-8 py-3 rounded-lg text-white"
               >
-                <span className="relative z-10">About Me</span>
+                <span className="relative z-10">More About Me</span>
                 <div className="absolute inset-0 bg-zinc-800 transform translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
               </motion.button>
             </a>

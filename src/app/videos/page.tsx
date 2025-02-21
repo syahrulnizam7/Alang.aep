@@ -14,7 +14,6 @@ import ReactPlayer from "react-player";
 import Navbar from "@/components/Navbar/page";
 import SkeletonLoading from "@/components/SkeletonLoading/page";
 
-// Define Video type
 interface Video {
   title: string;
   description: string;
@@ -30,6 +29,7 @@ interface Video {
 
 // Mock categories for filtering
 const categories = [
+  "All",
   "AMV",
   "PMV",
   "GMV",
@@ -68,8 +68,8 @@ const determineCategories = (title: string, description: string): string[] => {
     categories.push("Jedag Jedug");
   }
   if (
-    lowerTitle.includes("motion graphics") ||
-    lowerDescription.includes("motion graphics")
+    lowerTitle.includes("motiongraphic") ||
+    lowerDescription.includes("motiongraphic")
   ) {
     categories.push("Motion Graphics");
   }
@@ -100,53 +100,100 @@ export default function VideosPage() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const containerRef = useRef<HTMLDivElement>(null);
+  const [totalVideos, setTotalVideos] = useState<number | null>(null);
+  const [categoryCounts, setCategoryCounts] = useState<{
+    [key: string]: number;
+  } | null>(null);
 
   // Fetch all videos
   const fetchAllVideos = useCallback(async () => {
     setIsLoading(true);
-    setVideos([]); // Kosongkan video sebelum fetch ulang
+    setVideos([]);
+    setTotalVideos(null);
+    setCategoryCounts(null);
 
     let allVideos: Video[] = [];
-    let cursor: string | null = null;
+
+    // Masukkan Access Token masing-masing akun
+    const ACCESS_TOKEN_1 =
+      "IGAAIhyXao7wlBZAE1DeU1IS1VDRlZAyUzFjOHRyLXdndU1maW5kQ3JMRDFaX2ZAYUUlqQ0czbTRBTndMUkJ4NktQb3pOa29oa21mMVprQzlNSGdnN0RwRFIyZA0hrWjc3UmtycGRGRFB5ZAHE2bGpUZAk1ZAWWpwdEdyajZAaUGlxdWFyWQZDZD";
+    const ACCESS_TOKEN_2 =
+      "IGAAIhyXao7wlBZAE5hTW5nRTlnMnVPLXdMR1FNczlRTzl4aXFhWFdLaGxkRGdtM1daejBFRF9HYTdjODM5bXVyME5RNERncmFyT1JHcHFaS2VNZAkthcXdYUzI1cUFBQ3VzRU4tS0JfOTE0YW9sUUtnVi1fX0lsd0h5aXlxT1htUQZDZD";
+
+    // URL untuk kedua akun
+    const baseUrl1 = `https://graph.instagram.com/me/media?fields=id,media_type,media_url,thumbnail_url,caption,timestamp,like_count,permalink&access_token=${ACCESS_TOKEN_1}`;
+    const baseUrl2 = `https://graph.instagram.com/me/media?fields=id,media_type,media_url,thumbnail_url,caption,timestamp,like_count,permalink&access_token=${ACCESS_TOKEN_2}`;
+
+    // Fungsi untuk mengambil semua media dari satu akun dengan pagination
+    const fetchAllFromAccount = async (url: string) => {
+      let media: any[] = [];
+      let nextUrl: string | null = url;
+
+      try {
+        while (nextUrl) {
+          const response = await fetch(nextUrl);
+          const data: { data?: any[]; paging?: { next?: string } } =
+            await response.json();
+          if (data.data) {
+            // **Filter hanya video**
+            const videoMedia = data.data.filter(
+              (item: any) => item.media_type === "VIDEO"
+            );
+            media = [...media, ...videoMedia]; // Tambahkan hasil ke array utama
+          }
+          nextUrl = data.paging?.next || null; // Jika ada next page, update URL, jika tidak hentikan loop
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+
+      return media;
+    };
 
     try {
-      do {
-        const url: string = cursor
-          ? `https://graph.instagram.com/me/media?fields=id,media_type,media_url,thumbnail_url,caption,timestamp,like_count,permalink&access_token=IGAAIhyXao7wlBZAE1DeU1IS1VDRlZAyUzFjOHRyLXdndU1maW5kQ3JMRDFaX2ZAYUUlqQ0czbTRBTndMUkJ4NktQb3pOa29oa21mMVprQzlNSGdnN0RwRFIyZA0hrWjc3UmtycGRGRFB5ZAHE2bGpUZAk1ZAWWpwdEdyajZAaUGlxdWFyWQZDZD&after=${cursor}`
-          : `https://graph.instagram.com/me/media?fields=id,media_type,media_url,thumbnail_url,caption,timestamp,like_count,permalink&access_token=IGAAIhyXao7wlBZAE1DeU1IS1VDRlZAyUzFjOHRyLXdndU1maW5kQ3JMRDFaX2ZAYUUlqQ0czbTRBTndMUkJ4NktQb3pOa29oa21mMVprQzlNSGdnN0RwRFIyZA0hrWjc3UmtycGRGRFB5ZAHE2bGpUZAk1ZAWWpwdEdyajZAaUGlxdWFyWQZDZD`;
+      // Fetch semua video dari kedua akun
+      const [data1, data2] = await Promise.all([
+        fetchAllFromAccount(baseUrl1),
+        fetchAllFromAccount(baseUrl2),
+      ]);
 
-        const response = await fetch(url);
-        const data = await response.json();
+      // Format data agar seragam
+      const formatData = (data: any) =>
+        data.map((item: any) => ({
+          title: item.caption || "No Title",
+          description: item.caption || "No Description",
+          videoUrl: item.media_url,
+          thumbnailUrl: item.thumbnail_url || item.media_url,
+          categories: determineCategories(
+            item.caption || "",
+            item.caption || ""
+          ),
+          uploadDate: item.timestamp,
+          duration: "0:00",
+          likes: item.like_count || 0,
+          viewers: Math.floor(Math.random() * 10000) + 1000,
+          permalink: item.permalink || "#",
+        }));
 
-        const enhancedData = data.data.map(
-          (item: {
-            caption: string;
-            media_url: string;
-            thumbnail_url?: string;
-            timestamp: string;
-            like_count: number;
-            permalink: string;
-          }) => ({
-            title: item.caption || "No Title",
-            description: item.caption || "No Description",
-            videoUrl: item.media_url,
-            thumbnailUrl: item.thumbnail_url || item.media_url,
-            categories: determineCategories(
-              item.caption || "",
-              item.caption || ""
-            ),
-            uploadDate: item.timestamp,
-            duration: "0:00",
-            likes: item.like_count || 0,
-            viewers: Math.floor(Math.random() * 10000) + 1000,
-            permalink: item.permalink || "#",
-          })
-        );
+      // Gabungkan data dari kedua akun
+      allVideos = [...formatData(data1), ...formatData(data2)];
 
-        allVideos = [...allVideos, ...enhancedData];
-        cursor = data.paging?.cursors?.after || null;
-      } while (cursor); // Loop hingga semua data terambil
+      // Hitung total video
+      setTotalVideos(allVideos.length);
 
+      // Hitung jumlah video per kategori
+      const counts: { [key: string]: number } = {};
+      categories.forEach((category) => (counts[category] = 0));
+
+      allVideos.forEach((video) => {
+        video.categories.forEach((category) => {
+          if (counts[category] !== undefined) {
+            counts[category]++;
+          }
+        });
+      });
+
+      setCategoryCounts(counts);
       setVideos(allVideos);
     } catch (error) {
       console.error("Error fetching all videos:", error);
@@ -212,26 +259,22 @@ export default function VideosPage() {
           <span className="text-white">Videos</span>
         </div>
 
-        {/* Category filters */}
+        {/* Category Filters with Count */}
         <div className="mb-16">
-          <motion.h2
-            className="text-3xl font-bold mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-          >
+          <motion.h2 className="text-3xl font-bold mb-2">
             Browse Categories
           </motion.h2>
-
-          <motion.div
-            className="flex flex-wrap gap-3"
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
-            {categories.map((category, index) => (
+          {/* Total Videos */}
+          <div className="flex text-lg font-bold text-slate-400 mb-6">
+            Total Videos:
+            {isLoading ? (
+              <div className="ml-2 animate-spin h-5 w-5 border-4 border-gray-300 border-t-purple-500 rounded-full "></div>
+            ) : (
+              `  ${totalVideos}`
+            )}
+          </div>
+          <motion.div className="flex flex-wrap gap-3">
+            {categories.map((category) => (
               <motion.button
                 key={category}
                 className={`px-5 py-2 rounded-full font-medium transition-all ${
@@ -241,12 +284,14 @@ export default function VideosPage() {
                 }`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.1 * index }}
                 onClick={() => setActiveCategory(category)}
               >
-                {category}
+                {category}{" "}
+                {isLoading ? (
+                  <span className="animate-spin inline-block h-4 w-4 border-2 border-white border-t-purple-500 rounded-full"></span>
+                ) : (
+                  category !== "All" && `(${categoryCounts?.[category] ?? 0})`
+                )}
               </motion.button>
             ))}
           </motion.div>
