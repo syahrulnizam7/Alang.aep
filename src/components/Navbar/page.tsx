@@ -76,7 +76,7 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <ul className="hidden md:flex items-center space-x-8">
-            {["Hero", "Edits", "About", "Tools", "Contact"].map((item) => {
+            {["Home", "Edits", "About", "Tools", "Contact"].map((item) => {
               const sectionId = item.toLowerCase().replace(" ", "-");
               return (
                 <li key={item}>
