@@ -456,25 +456,25 @@ const ContactSection = () => {
     {
       name: "Instagram",
       icon: Instagram,
-      href: "https://instagram.com/yourusername",
+      href: "https://instagram.com/alang.kun",
       color: "hover:text-pink-500",
     },
     {
       name: "WhatsApp",
       icon: Phone,
-      href: "https://wa.me/yourphonenumber",
+      href: "https://wa.me/085278048446",
       color: "hover:text-green-500",
     },
     {
       name: "Email",
       icon: Mail,
-      href: "mailto:your@email.com",
+      href: "mailto:alangkun7@email.com",
       color: "hover:text-blue-500",
     },
     {
       name: "TikTok",
       icon: TikTokIcon,
-      href: "https://tiktok.com/@yourusername",
+      href: "https://tiktok.com/@alang.kun",
       color: "hover:text-[#ff0050]",
     },
   ];
