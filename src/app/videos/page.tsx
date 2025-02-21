@@ -125,23 +125,41 @@ export default function VideosPage() {
     const baseUrl2 = `https://graph.instagram.com/me/media?fields=id,media_type,media_url,thumbnail_url,caption,timestamp,like_count,permalink&access_token=${ACCESS_TOKEN_2}`;
 
     // Fungsi untuk mengambil semua media dari satu akun dengan pagination
-    const fetchAllFromAccount = async (url: string) => {
-      let media: any[] = [];
+    interface InstagramMedia {
+      id: string;
+      media_type: string;
+      media_url: string;
+      thumbnail_url?: string;
+      caption?: string;
+      timestamp: string;
+      like_count?: number;
+      permalink?: string;
+    }
+
+    interface InstagramResponse {
+      data?: InstagramMedia[];
+      paging?: {
+        next?: string;
+      };
+    }
+
+    const fetchAllFromAccount = async (
+      url: string
+    ): Promise<InstagramMedia[]> => {
+      let media: InstagramMedia[] = [];
       let nextUrl: string | null = url;
 
       try {
         while (nextUrl) {
           const response = await fetch(nextUrl);
-          const data: { data?: any[]; paging?: { next?: string } } =
-            await response.json();
+          const data: InstagramResponse = await response.json();
           if (data.data) {
-            // **Filter hanya video**
             const videoMedia = data.data.filter(
-              (item: any) => item.media_type === "VIDEO"
+              (item) => item.media_type === "VIDEO"
             );
-            media = [...media, ...videoMedia]; // Tambahkan hasil ke array utama
+            media = [...media, ...videoMedia];
           }
-          nextUrl = data.paging?.next || null; // Jika ada next page, update URL, jika tidak hentikan loop
+          nextUrl = data.paging?.next || null;
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -158,8 +176,8 @@ export default function VideosPage() {
       ]);
 
       // Format data agar seragam
-      const formatData = (data: any) =>
-        data.map((item: any) => ({
+      const formatData = (data: InstagramMedia[]): Video[] =>
+        data.map((item) => ({
           title: item.caption || "No Title",
           description: item.caption || "No Description",
           videoUrl: item.media_url,
@@ -182,7 +200,7 @@ export default function VideosPage() {
       setTotalVideos(allVideos.length);
 
       // Hitung jumlah video per kategori
-      const counts: { [key: string]: number } = {};
+      const counts: Record<string, number> = {};
       categories.forEach((category) => (counts[category] = 0));
 
       allVideos.forEach((video) => {

@@ -211,9 +211,9 @@ const VideoSection = () => {
         <div className="flex justify-center mt-12">
           <Link
             href="/videos"
-            className="group relative overflow-hidden bg-gradient-to-r from-purple-500 to-blue-500 px-8 py-3 rounded-lg text-white font-medium font-sans"
+            className="group w-full sm:w-auto relative overflow-hidden bg-gradient-to-r from-purple-500 to-blue-500 px-8 py-3 rounded-lg text-white text-center font-medium font-sans"
           >
-            <span className="relative z-10">View All Videos</span>
+            <span className="relative z-10">View All Edits</span>
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 transform translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
           </Link>
         </div>
