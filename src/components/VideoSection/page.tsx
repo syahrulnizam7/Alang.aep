@@ -117,7 +117,7 @@ const VideoSection = () => {
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="sync">
             {videos.map((video, index) => (
               <motion.div
                 key={`${video.title}-${index}`}
@@ -211,7 +211,7 @@ const VideoSection = () => {
         <div className="flex justify-center mt-12">
           <Link
             href="/videos"
-            className="group relative overflow-hidden bg-gradient-to-r from-purple-500 to-blue-500 px-8 py-3 rounded-lg text-white font-medium font-mono"
+            className="group relative overflow-hidden bg-gradient-to-r from-purple-500 to-blue-500 px-8 py-3 rounded-lg text-white font-medium font-sans"
           >
             <span className="relative z-10">View All Videos</span>
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 transform translate-x-full group-hover:translate-x-0 transition-transform duration-500" />

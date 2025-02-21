@@ -5,10 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   PlayCircleIcon,
   XCircleIcon,
-  Clock,
   Calendar,
   Eye,
   Heart,
+  Instagram as InstagramIcon,
 } from "lucide-react";
 import ReactPlayer from "react-player";
 import Navbar from "@/components/Navbar/page";
@@ -160,7 +160,6 @@ export default function VideosPage() {
     fetchAllVideos();
   }, [fetchAllVideos]);
 
-  // Filter videos when category changes
   useEffect(() => {
     const filterVideos = async () => {
       setIsFiltering(true); // Mulai proses filtering
@@ -176,7 +175,7 @@ export default function VideosPage() {
         );
       }
 
-      setIsFiltering(false); // Selesai proses filtering
+      setIsFiltering(false);
     };
 
     filterVideos();
@@ -371,7 +370,7 @@ export default function VideosPage() {
           </motion.div>
         )}
 
-        {/* Tombol Load More */}
+        {/* Tombol Load More
         {nextCursor && (
           <motion.div
             className="flex justify-center mt-8"
@@ -390,7 +389,7 @@ export default function VideosPage() {
               {isLoading ? "Loading..." : "Load More"}
             </motion.button>
           </motion.div>
-        )}
+        )} */}
 
         {/* Pesan jika tidak ada data lagi */}
         {!nextCursor && !isLoading && (
@@ -411,7 +410,7 @@ export default function VideosPage() {
             onClick={closeModal}
           >
             <motion.div
-              className="relative w-full max-w-4xl mx-4"
+              className="relative w-full max-w-4xl mx-4 max-h-screen overflow-y-auto custom-scroll"
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
@@ -426,7 +425,7 @@ export default function VideosPage() {
                   height="100%"
                   playing={playing}
                   controls
-                  className="aspect-video"
+                  className="aspect-video "
                 />
               </div>
 
@@ -448,13 +447,16 @@ export default function VideosPage() {
                             {category}
                           </span>
                         ))}
+                        {/* Format tanggal */}
                         <span className="flex items-center gap-1">
                           <Calendar size={14} />
-                          {activeVideoData.uploadDate}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock size={14} />
-                          {activeVideoData.duration}
+                          {new Date(
+                            activeVideoData.uploadDate
+                          ).toLocaleDateString("id-ID", {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                          })}
                         </span>
                       </div>
                     </div>
@@ -468,9 +470,23 @@ export default function VideosPage() {
                       <XCircleIcon size={24} />
                     </motion.button>
                   </div>
+
+                  {/* Deskripsi */}
                   <p className="mt-4 text-gray-300">
                     {activeVideoData.description}
                   </p>
+
+                  {/* Tombol View on Instagram */}
+                  {activeVideoData.permalink && (
+                    <a
+                      href={activeVideoData.permalink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white font-sans rounded-lg hover:opacity-90 transition"
+                    >
+                      <InstagramIcon size={20} /> View on Instagram
+                    </a>
+                  )}
                 </motion.div>
               )}
             </motion.div>

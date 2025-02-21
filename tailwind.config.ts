@@ -12,6 +12,11 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        sans: "var(--font-inter), sans-serif", // Inter sebagai default
+        geist: "var(--font-geist-sans), sans-serif", // Geist Sans sebagai alternatif
+        mono: "var(--font-geist-mono), monospace", // Geist Mono untuk teks monospaced
+      },
     },
   },
   plugins: [],
