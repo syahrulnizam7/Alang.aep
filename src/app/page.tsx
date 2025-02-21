@@ -60,7 +60,7 @@ const HeroSection = () => {
         ))}
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -449,13 +449,13 @@ const ContactSection = () => {
     {
       name: "WhatsApp",
       icon: Phone,
-      href: "https://wa.me/085278048446",
+      href: "https://wa.me/6285278048446",
       color: "hover:text-green-500",
     },
     {
       name: "Email",
       icon: Mail,
-      href: "mailto:alangkun7@email.com",
+      href: "mailto:alangkun7@gmail.com",
       color: "hover:text-blue-500",
     },
     {
