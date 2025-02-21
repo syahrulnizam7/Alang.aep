@@ -7,7 +7,7 @@ import VideoSection from "@/components/VideoSection/page";
 import Navbar from "@/components/Navbar/page";
 import Image from "next/image";
 import Link from "next/link";
-import { Instagram, Mail, MessageCircle, Phone } from "lucide-react";
+import { Instagram, Mail, Phone } from "lucide-react";
 
 const HeroSection = () => {
   const ref = useRef(null);
@@ -149,19 +149,6 @@ const HeroSection = () => {
   );
 };
 
-const sentence = {
-  hidden: { opacity: 1 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.05 },
-  },
-};
-
-const word = {
-  hidden: { opacity: 0, y: 10 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
-};
-
 const AboutSection = () => {
   return (
     <section
@@ -188,8 +175,8 @@ const AboutSection = () => {
             whileInView={{ opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.8 }}
           >
-            Hi, I'm <span className="text-white font-semibold">Alang</span>! A
-            passionate content creator and video editor specializing in{" "}
+            Hi, I&apos;m <span className="text-white font-semibold">Alang</span>
+            ! A passionate content creator and video editor specializing in{" "}
             <span className="text-purple-400">AMVs</span>,{" "}
             <span className="text-purple-400">motion graphics</span>, and{" "}
             <span className="text-purple-400">social media edits</span>. With a
@@ -559,7 +546,7 @@ const ContactSection = () => {
             whileInView="visible"
             viewport={{ once: false, amount: 0.4 }}
           >
-            {socialLinks.map((social, index) => (
+            {socialLinks.map((social) => (
               <motion.a
                 key={social.name}
                 href={social.href}
