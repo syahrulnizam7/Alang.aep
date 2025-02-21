@@ -183,7 +183,7 @@ const AboutSection = () => {
             love for storytelling and a keen eye for detail, I transform raw
             footage into visually stunning masterpieces.{" "}
             <span className="block mt-3 font-semibold text-white">
-              Let's create something amazing together!
+              Let&apos;s create something amazing together!
             </span>
           </motion.p>
         </motion.div>
