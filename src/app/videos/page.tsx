@@ -189,7 +189,8 @@ export default function VideosPage() {
           uploadDate: item.timestamp,
           duration: "0:00",
           likes: item.like_count || 0,
-          viewers: Math.floor(Math.random() * 10000) + 1000,
+          viewers: item.like_count ? item.like_count * 10 : 1000, // Perkiraan viewers berdasarkan likes
+
           permalink: item.permalink || "#",
         }));
 
