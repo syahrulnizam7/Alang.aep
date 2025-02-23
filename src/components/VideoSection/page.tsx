@@ -67,7 +67,7 @@ const VideoSection = () => {
             category: "AMV",
             duration: "3:24",
             likes: item.like_count || 0,
-            viewers: Math.floor(Math.random() * 10000) + 1000,
+            viewers: item.like_count ? item.like_count * 10 : 1000, // Perkiraan viewers berdasarkan likes
           }));
 
         setVideos(enhancedData);
