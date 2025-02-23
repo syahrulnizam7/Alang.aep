@@ -13,6 +13,7 @@ import {
   Clock,
   Bookmark,
   Maximize,
+  Instagram as InstagramIcon,
 } from "lucide-react";
 
 // Types for Instagram API data
@@ -24,6 +25,7 @@ type InstagramVideo = {
   caption?: string;
   timestamp: string;
   like_count?: number;
+  permalink?: string;
 };
 
 // Types for displayed video
@@ -33,10 +35,50 @@ type Video = {
   videoUrl: string;
   thumbnailUrl: string;
   uploadDate: string;
-  category: string;
+  categories: string[];
   duration: string;
   likes: number;
   viewers: number;
+  permalink?: string;
+};
+
+// Fungsi untuk menentukan kategori berdasarkan judul dan deskripsi
+const determineCategories = (title: string, description: string): string[] => {
+  const lowerTitle = title.toLowerCase();
+  const lowerDescription = description.toLowerCase();
+  const categories: string[] = [];
+
+  if (lowerTitle.includes("amv") || lowerDescription.includes("amv")) {
+    categories.push("AMV");
+  }
+  if (lowerTitle.includes("pmv") || lowerDescription.includes("pmv")) {
+    categories.push("PMV");
+  }
+  if (lowerTitle.includes("gmv") || lowerDescription.includes("gmv")) {
+    categories.push("GMV");
+  }
+  if (lowerTitle.includes("jedag") || lowerDescription.includes("jedag")) {
+    categories.push("Jedag Jedug");
+  }
+  if (
+    lowerTitle.includes("motiongraphic") ||
+    lowerDescription.includes("motiongraphic")
+  ) {
+    categories.push("Motion Graphics");
+  }
+  if (
+    lowerTitle.includes("tutorial") ||
+    lowerDescription.includes("tutorial")
+  ) {
+    categories.push("Tutorials");
+  }
+
+  // Jika tidak ada kategori yang cocok, masukkan ke "Others"
+  if (categories.length === 0) {
+    categories.push("Others");
+  }
+
+  return categories;
 };
 
 const VideoSection = () => {
@@ -51,7 +93,7 @@ const VideoSection = () => {
     const fetchVideos = async () => {
       try {
         const response = await fetch(
-          `https://graph.instagram.com/me/media?fields=id,media_type,media_url,thumbnail_url,caption,timestamp,like_count&access_token=IGAAIhyXao7wlBZAE1nM2tkUUwzVmd6Y2ZADVTdSUDJnd3prNG1PWFlxbHZAOM040cU01TldndGJxTk9nRGNKYVB3UkZABOWhKa21tQWVyWl9ibk8wS3pCX0FwU0ZA2bV9uZAE8zV18xTzcwUFJCa3gtcGREX2JtRWNESGRhVG52SHN2bwZDZD`
+          `https://graph.instagram.com/me/media?fields=id,media_type,media_url,thumbnail_url,caption,timestamp,like_count,permalink&access_token=IGAAIhyXao7wlBZAE1nM2tkUUwzVmd6Y2ZADVTdSUDJnd3prNG1PWFlxbHZAOM040cU01TldndGJxTk9nRGNKYVB3UkZABOWhKa21tQWVyWl9ibk8wS3pCX0FwU0ZA2bV9uZAE8zV18xTzcwUFJCa3gtcGREX2JtRWNESGRhVG52SHN2bwZDZD`
         );
         const data = await response.json();
 
@@ -64,10 +106,14 @@ const VideoSection = () => {
             videoUrl: item.media_url,
             thumbnailUrl: item.thumbnail_url || item.media_url,
             uploadDate: new Date(item.timestamp).toLocaleDateString(),
-            category: "AMV",
+            categories: determineCategories(
+              item.caption || "",
+              item.caption || ""
+            ), // Gunakan fungsi determineCategories
             duration: "3:24",
             likes: item.like_count || 0,
             viewers: item.like_count ? item.like_count * 10 : 1000, // Perkiraan viewers berdasarkan likes
+            permalink: item.permalink || "#",
           }));
 
         setVideos(enhancedData);
@@ -138,6 +184,32 @@ const VideoSection = () => {
                     boxShadow: "0 15px 30px -10px rgba(138, 75, 255, 0.3)",
                   }}
                 >
+                  {/* Tag Kategori */}
+                  <div className="absolute top-2 left-2 flex gap-2 z-10">
+                    {video.categories.map((category, idx) => (
+                      <span
+                        key={idx}
+                        className={`px-2 py-1 text-xs font-semibold rounded-md ${
+                          category === "AMV"
+                            ? "bg-blue-500"
+                            : category === "PMV"
+                            ? "bg-purple-500"
+                            : category === "GMV"
+                            ? "bg-green-500"
+                            : category === "Jedag Jedug"
+                            ? "bg-red-500"
+                            : category === "Motion Graphics"
+                            ? "bg-yellow-500"
+                            : category === "Tutorials"
+                            ? "bg-indigo-500"
+                            : "bg-gray-500" // Default untuk "Others"
+                        } text-white`}
+                      >
+                        {category}
+                      </span>
+                    ))}
+                  </div>
+
                   <motion.img
                     src={video.thumbnailUrl}
                     alt={video.title}
@@ -230,13 +302,14 @@ const VideoSection = () => {
             onClick={closeModal}
           >
             <motion.div
-              className="relative w-full max-w-4xl mx-4"
+              className="relative w-full max-w-4xl mx-4 max-h-screen overflow-y-auto custom-scroll"
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ type: "spring", damping: 30 }}
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Video player */}
               <div className="rounded-xl overflow-hidden shadow-2xl">
                 <ReactPlayer
                   url={selectedVideo}
@@ -248,33 +321,38 @@ const VideoSection = () => {
                 />
               </div>
 
+              {/* Video information */}
               {activeVideoData && (
-                <motion.div
-                  className="mt-6 p-6 bg-gray-900/60 backdrop-blur-md rounded-xl"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                >
+                <motion.div className="mt-6 p-6 bg-gray-900/60 backdrop-blur-md rounded-xl">
                   <div className="flex justify-between items-start">
                     <div>
                       <h3 className="text-2xl font-bold text-white">
                         {activeVideoData.title}
                       </h3>
                       <div className="flex items-center gap-4 mt-2 text-sm text-gray-400">
-                        <span className="px-2 py-1 bg-purple-900/40 rounded-md text-purple-300">
-                          {activeVideoData.category}
-                        </span>
+                        {/* Tampilkan semua kategori */}
+                        {activeVideoData.categories.map((category, index) => (
+                          <span
+                            key={index}
+                            className="px-2 py-1 bg-purple-900/40 rounded-md text-purple-300"
+                          >
+                            {category}
+                          </span>
+                        ))}
+                        {/* Format tanggal */}
                         <span className="flex items-center gap-1">
                           <Calendar size={14} />
-                          {activeVideoData.uploadDate}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock size={14} />
-                          {activeVideoData.duration}
+                          {new Date(
+                            activeVideoData.uploadDate
+                          ).toLocaleDateString("id-ID", {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                          })}
                         </span>
                       </div>
                     </div>
-
+                    {/* Tombol close modal */}
                     <motion.button
                       className="p-3 rounded-full bg-white/10 hover:bg-white/20"
                       whileHover={{ scale: 1.1 }}
@@ -285,29 +363,22 @@ const VideoSection = () => {
                     </motion.button>
                   </div>
 
+                  {/* Deskripsi */}
                   <p className="mt-4 text-gray-300">
                     {activeVideoData.description}
                   </p>
 
-                  <div className="flex gap-4 mt-6">
-                    <motion.button
-                      className="flex items-center gap-2 px-5 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg"
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
+                  {/* Tombol View on Instagram */}
+                  {activeVideoData.permalink && (
+                    <a
+                      href={activeVideoData.permalink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white font-sans rounded-lg hover:opacity-90 transition"
                     >
-                      <Bookmark size={16} />
-                      Save
-                    </motion.button>
-
-                    <motion.button
-                      className="flex items-center gap-2 px-5 py-2 bg-white/10 hover:bg-white/20 rounded-lg"
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
-                    >
-                      <Maximize size={16} />
-                      Fullscreen
-                    </motion.button>
-                  </div>
+                      <InstagramIcon size={20} /> View on Instagram
+                    </a>
+                  )}
                 </motion.div>
               )}
             </motion.div>
