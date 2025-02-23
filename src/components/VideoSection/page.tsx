@@ -90,7 +90,7 @@ const VideoSection = () => {
     const fetchVideos = async () => {
       try {
         const response = await fetch(
-          `https://graph.instagram.com/me/media?fields=id,media_type,media_url,thumbnail_url,caption,timestamp,like_count,permalink&access_token=IGAAIhyXao7wlBZAE1nM2tkUUwzVmd6Y2ZADVTdSUDJnd3prNG1PWFlxbHZAOM040cU01TldndGJxTk9nRGNKYVB3UkZABOWhKa21tQWVyWl9ibk8wS3pCX0FwU0ZA2bV9uZAE8zV18xTzcwUFJCa3gtcGREX2JtRWNESGRhVG52SHN2bwZDZD`
+          `https://graph.instagram.com/me/media?fields=id,media_type,media_url,thumbnail_url,caption,timestamp,like_count,permalink&access_token=${process.env.NEXT_PUBLIC_INSTAGRAM_ACCESS_TOKEN_1}`
         );
         const data = await response.json();
 
