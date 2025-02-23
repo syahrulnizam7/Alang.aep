@@ -10,9 +10,6 @@ import {
   Eye,
   Heart,
   Calendar,
-  Clock,
-  Bookmark,
-  Maximize,
   Instagram as InstagramIcon,
 } from "lucide-react";
 
