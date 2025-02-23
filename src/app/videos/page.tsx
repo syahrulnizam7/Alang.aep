@@ -115,10 +115,9 @@ export default function VideosPage() {
     let allVideos: Video[] = [];
 
     // Masukkan Access Token masing-masing akun
-    const ACCESS_TOKEN_1 =
-      "IGAAIhyXao7wlBZAE1DeU1IS1VDRlZAyUzFjOHRyLXdndU1maW5kQ3JMRDFaX2ZAYUUlqQ0czbTRBTndMUkJ4NktQb3pOa29oa21mMVprQzlNSGdnN0RwRFIyZA0hrWjc3UmtycGRGRFB5ZAHE2bGpUZAk1ZAWWpwdEdyajZAaUGlxdWFyWQZDZD";
-    const ACCESS_TOKEN_2 =
-      "IGAAIhyXao7wlBZAE5hTW5nRTlnMnVPLXdMR1FNczlRTzl4aXFhWFdLaGxkRGdtM1daejBFRF9HYTdjODM5bXVyME5RNERncmFyT1JHcHFaS2VNZAkthcXdYUzI1cUFBQ3VzRU4tS0JfOTE0YW9sUUtnVi1fX0lsd0h5aXlxT1htUQZDZD";
+    const ACCESS_TOKEN_1 = process.env.NEXT_PUBLIC_INSTAGRAM_ACCESS_TOKEN_1;
+
+    const ACCESS_TOKEN_2 = process.env.NEXT_PUBLIC_INSTAGRAM_ACCESS_TOKEN_2;
 
     // URL untuk kedua akun
     const baseUrl1 = `https://graph.instagram.com/me/media?fields=id,media_type,media_url,thumbnail_url,caption,timestamp,like_count,permalink&access_token=${ACCESS_TOKEN_1}`;
